@@ -8,12 +8,23 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class MainAct extends AppCompatActivity {
+    private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/";
+    private static final String TAG = "MainAct";
 
     /**
      * The {@link android.support.v4.view.PagerAdapter} that will provide
@@ -29,6 +40,7 @@ public class MainAct extends AppCompatActivity {
      * The {@link ViewPager} that will host the section contents.
      */
     private ViewPager mViewPager;
+    private List<Movie> movies;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -56,7 +68,28 @@ public class MainAct extends AppCompatActivity {
 //                        .setAction("Action", null).show();
 //            }
 //        });
+        Retrofit retrofit = new Retrofit.Builder()
+                .baseUrl(MOVIES_BASE_URL)
+                .addConverterFactory(GsonConverterFactory.create())
+                .build();
+        MoviesApi service = retrofit.create(MoviesApi.class);
+        Call<MovieList> mlc = service.getMovie("popular", getString(R.string.THE_MOVIE_DB_API_TOKEN));
+        mlc.enqueue(new Callback<MovieList>() {
+            @Override
+            public void onResponse(Call<MovieList> call, Response<MovieList> response) {
 
+                Log.d(TAG, "doInBackground: response");
+                movies = response.body().movieList;
+                Log.d(TAG, "onResponse: " + movies.size() + " ");
+            }
+
+            @Override
+            public void onFailure(Call<MovieList> call, Throwable t) {
+
+                Log.d(TAG, "doInBackground: fail ");
+                t.printStackTrace();
+            }
+        });
     }
 
     /**
@@ -114,7 +147,7 @@ public class MainAct extends AppCompatActivity {
         @Override
         public int getCount() {
             // Show 3 total pages.
-            return 3;
+            return 2;
         }
 
         @Override
