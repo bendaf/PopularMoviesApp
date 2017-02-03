@@ -1,6 +1,10 @@
 package hu.bendaf.udacity.popularmovies.popularmoviesapp;
 
+import android.content.Intent;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.GridLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -12,6 +16,7 @@ import android.widget.ImageView;
 
 import com.squareup.picasso.Picasso;
 
+import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +28,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by bendaf on 2017. 02. 03. PopularMoviesApp.
+ * This fragment is displaying the list of the movies.
  */
 
 public class MovieListFragment extends Fragment {
@@ -42,7 +48,7 @@ public class MovieListFragment extends Fragment {
      * Returns a new instance of this fragment for the given section
      * number.
      *
-     * @param movieType
+     * @param movieType Type of the movie list.
      */
     public static MovieListFragment newInstance(String movieType) {
         MovieListFragment fragment = new MovieListFragment();
@@ -94,17 +100,29 @@ public class MovieListFragment extends Fragment {
         }
 
         @Override
-        public void onBindViewHolder(MoviesAdapter.ViewHolder holder, int position) {
-            Log.d(TAG, "onBindViewHolder: " + "http://image.tmdb.org/t/p/w185" + movies.get(position).getPosterPath());
-            Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w185" +
+        public void onBindViewHolder(final MoviesAdapter.ViewHolder holder, int position) {
+            Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w342" +
                     movies.get(position).getPosterPath()).into(holder.ivPic);
-//            holder.ivPic.setImageResource(R.mipmap.ic_launcher);
-//            Picasso.with(getContext()).load("http://i.imgur.com/DvpvklR.png").into(holder.ivPic);
+            holder.ivPic.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    Bitmap bitmap = ((BitmapDrawable) holder.ivPic.getDrawable()).getBitmap();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                    byte[] b = baos.toByteArray();
+
+                    Intent openDetails = new Intent(getContext(), MovieDetailsAct.class);
+                    openDetails.putExtra(MovieDetailsAct.EXTRA_MOVIE, movies.get(holder.getLayoutPosition()));
+                    openDetails.putExtra(MovieDetailsAct.EXTRA_PICTURE, b);
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(getActivity(), holder.ivPic, "picture");
+                    startActivity(openDetails, options.toBundle());
+                }
+            });
         }
 
         @Override
         public int getItemCount() {
-//            Log.d(TAG, "getItemCount: " + movies.size());
             return movies.size();
         }
 

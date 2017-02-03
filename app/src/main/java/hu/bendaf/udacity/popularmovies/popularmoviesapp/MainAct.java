@@ -11,6 +11,8 @@ import android.support.v7.widget.Toolbar;
 
 public class MainAct extends AppCompatActivity {
     private static final String TAG = "MainAct";
+    public static final String PATH_POPULAR = "popular";
+    public static final String PATH_TOP_RATED = "top_rated";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -39,14 +41,14 @@ public class MainAct extends AppCompatActivity {
      */
     public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-        public SectionsPagerAdapter(FragmentManager fm) {
+        SectionsPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 
         @Override
         public Fragment getItem(int position) {
 
-            return MovieListFragment.newInstance(position == 0 ? "popular" : "top_rated");
+            return MovieListFragment.newInstance(position == 0 ? PATH_POPULAR : PATH_TOP_RATED);
         }
 
         @Override
@@ -59,9 +61,9 @@ public class MainAct extends AppCompatActivity {
         public CharSequence getPageTitle(int position) {
             switch(position) {
                 case 0:
-                    return "POPULAR";
+                    return getString(R.string.title_tab_popular).toUpperCase();
                 case 1:
-                    return "TOP RATED";
+                    return getString(R.string.title_tab_top_rated).toUpperCase();
             }
             return null;
         }
