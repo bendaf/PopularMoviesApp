@@ -1,4 +1,4 @@
-package hu.bendaf.udacity.popularmovies.popularmoviesapp;
+package hu.bendaf.udacity.popularmovies.popularmoviesapp.fragments;
 
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -20,6 +20,11 @@ import java.io.ByteArrayOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.R;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.activities.MovieDetailsAct;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.Movie;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.MovieList;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.MoviesApi;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -71,7 +76,7 @@ public class MovieListFragment extends Fragment {
             @Override
             public void onResponse(Call<MovieList> call, Response<MovieList> response) {
 
-                movies = response.body().movieList;
+                movies = response.body().getMovieList();
                 mAdapter.notifyDataSetChanged();
             }
 

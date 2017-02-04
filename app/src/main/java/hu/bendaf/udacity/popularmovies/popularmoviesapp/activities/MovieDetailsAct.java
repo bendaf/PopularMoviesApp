@@ -1,10 +1,15 @@
-package hu.bendaf.udacity.popularmovies.popularmoviesapp;
+package hu.bendaf.udacity.popularmovies.popularmoviesapp.activities;
 
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.ImageView;
 import android.widget.TextView;
+
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.R;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.Movie;
+
+;
 
 public class MovieDetailsAct extends AppCompatActivity {
 

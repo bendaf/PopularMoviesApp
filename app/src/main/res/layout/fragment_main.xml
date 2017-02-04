@@ -6,7 +6,7 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="hu.bendaf.udacity.popularmovies.popularmoviesapp.MainAct">
+    tools:context="hu.bendaf.udacity.popularmovies.popularmoviesapp.activities.MainAct">
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/rl_movie_images"

@@ -1,4 +1,4 @@
-package hu.bendaf.udacity.popularmovies.popularmoviesapp;
+package hu.bendaf.udacity.popularmovies.popularmoviesapp.utils;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -9,7 +9,12 @@ import java.util.List;
  * This class if for storing a page data.
  */
 
-class MovieList {
+public class MovieList {
+
     @SerializedName("results")
-    List<Movie> movieList;
+    private List<Movie> movieList;
+
+    public List<Movie> getMovieList() {
+        return movieList;
+    }
 }

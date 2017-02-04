@@ -1,4 +1,4 @@
-package hu.bendaf.udacity.popularmovies.popularmoviesapp;
+package hu.bendaf.udacity.popularmovies.popularmoviesapp.activities;
 
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -8,6 +8,9 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.R;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.fragments.MovieListFragment;
 
 public class MainAct extends AppCompatActivity {
     private static final String TAG = "MainAct";

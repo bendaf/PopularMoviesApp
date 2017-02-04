@@ -1,4 +1,4 @@
-package hu.bendaf.udacity.popularmovies.popularmoviesapp;
+package hu.bendaf.udacity.popularmovies.popularmoviesapp.utils;
 
 import android.os.Parcel;
 import android.os.Parcelable;
@@ -9,7 +9,7 @@ import com.google.gson.annotations.SerializedName;
  * Created by bendaf on 2017. 02. 03. PopularMoviesApp.
  * This class is for storing movie datas.
  */
-class Movie implements Parcelable {
+public class Movie implements Parcelable {
     @SerializedName("poster_path")
     private String posterPath;
     @SerializedName("original_title")
@@ -24,7 +24,7 @@ class Movie implements Parcelable {
     public Movie() {
     }
 
-    String getPosterPath() {
+    public String getPosterPath() {
         return posterPath;
     }
 
@@ -32,15 +32,15 @@ class Movie implements Parcelable {
         return title;
     }
 
-    String getVoteAverage() {
+    public String getVoteAverage() {
         return voteAverage;
     }
 
-    String getOverview() {
+    public String getOverview() {
         return overview;
     }
 
-    String getReleaseDate() {
+    public String getReleaseDate() {
         return releaseDate;
     }
 
