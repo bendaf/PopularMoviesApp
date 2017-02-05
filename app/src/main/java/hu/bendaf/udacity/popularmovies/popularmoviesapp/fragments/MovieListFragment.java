@@ -41,9 +41,7 @@ public class MovieListFragment extends Fragment {
     private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/";
     private static final String ARG_MOVIE_TYPE = "movie_type";
     private static final String TAG = "MovieListFragment";
-    private MoviesApi service;
     private List<Movie> movies = new ArrayList<>();
-    private RecyclerView mRecycler;
     private MoviesAdapter mAdapter;
 
     public MovieListFragment() {
@@ -70,7 +68,7 @@ public class MovieListFragment extends Fragment {
                 .baseUrl(MOVIES_BASE_URL)
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
-        service = retrofit.create(MoviesApi.class);
+        MoviesApi service = retrofit.create(MoviesApi.class);
         Call<MovieList> mlc = service.getMovies(getArguments().getString(ARG_MOVIE_TYPE), getString(R.string.THE_MOVIE_DB_API_TOKEN));
         mlc.enqueue(new Callback<MovieList>() {
             @Override
@@ -88,11 +86,11 @@ public class MovieListFragment extends Fragment {
             }
         });
 
-        mRecycler = (RecyclerView) rootView.findViewById(R.id.rl_movie_images);
-        mRecycler.setHasFixedSize(true);
+        RecyclerView moviesRecycler = (RecyclerView) rootView.findViewById(R.id.rl_movie_images);
+        moviesRecycler.setHasFixedSize(true);
         mAdapter = new MoviesAdapter();
-        mRecycler.setAdapter(mAdapter);
-        mRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        moviesRecycler.setAdapter(mAdapter);
+        moviesRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
         return rootView;
     }
 
@@ -111,14 +109,15 @@ public class MovieListFragment extends Fragment {
             holder.ivPic.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
-                    Bitmap bitmap = ((BitmapDrawable) holder.ivPic.getDrawable()).getBitmap();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                    byte[] b = baos.toByteArray();
-
                     Intent openDetails = new Intent(getContext(), MovieDetailsAct.class);
                     openDetails.putExtra(MovieDetailsAct.EXTRA_MOVIE, movies.get(holder.getLayoutPosition()));
-                    openDetails.putExtra(MovieDetailsAct.EXTRA_PICTURE, b);
+                    if(holder.ivPic.getDrawable() != null) {
+                        Bitmap bitmap = ((BitmapDrawable) holder.ivPic.getDrawable()).getBitmap();
+                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                        byte[] b = baos.toByteArray();
+                        openDetails.putExtra(MovieDetailsAct.EXTRA_PICTURE, b);
+                    }
                     ActivityOptionsCompat options = ActivityOptionsCompat.
                             makeSceneTransitionAnimation(getActivity(), holder.ivPic, "picture");
                     startActivity(openDetails, options.toBundle());
@@ -133,7 +132,7 @@ public class MovieListFragment extends Fragment {
 
         class ViewHolder extends RecyclerView.ViewHolder {
 
-            ImageView ivPic;
+            final ImageView ivPic;
 
             ViewHolder(View itemView) {
                 super(itemView);

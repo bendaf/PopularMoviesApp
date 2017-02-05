@@ -14,8 +14,8 @@ import hu.bendaf.udacity.popularmovies.popularmoviesapp.fragments.MovieListFragm
 
 public class MainAct extends AppCompatActivity {
     private static final String TAG = "MainAct";
-    public static final String PATH_POPULAR = "popular";
-    public static final String PATH_TOP_RATED = "top_rated";
+    private static final String PATH_POPULAR = "popular";
+    private static final String PATH_TOP_RATED = "top_rated";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
