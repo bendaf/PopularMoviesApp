@@ -1,6 +1,11 @@
 package hu.bendaf.udacity.popularmovies.popularmoviesapp.activities;
 
+import android.app.LoaderManager;
+import android.content.ContentValues;
+import android.content.CursorLoader;
 import android.content.Intent;
+import android.content.Loader;
+import android.database.Cursor;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
@@ -10,6 +15,7 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,6 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.R;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.Movie;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.MovieColumns;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.MovieProvider;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.Review;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.Trailer;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.MoviesApi;
@@ -51,6 +59,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
     private Movie mMovie;
     private RecyclerView.Adapter mTrailerAdapter = new TrailerAdapter();
     private RecyclerView.Adapter mReviewAdapter = new ReviewAdapter();
+    private boolean isFavorite = false;
 
     @Override protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,6 +97,24 @@ import retrofit2.converter.gson.GsonConverterFactory;
         mReviews.setLayoutManager(new LinearLayoutManager(getBaseContext()));
         mReviews.setAdapter(mReviewAdapter);
 
+        LoaderManager.LoaderCallbacks<Cursor> callback = new LoaderManager.LoaderCallbacks<Cursor>() {
+            @Override public Loader<Cursor> onCreateLoader(int i, Bundle bundle) {
+                return new CursorLoader(getBaseContext(), MovieProvider.Movies.withId(mMovie.getId()), null, null, null, null);
+            }
+
+            @Override public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
+                if(cursor == null) return;
+                if(cursor.moveToNext()) {
+                    isFavorite = true;
+                    invalidateOptionsMenu();
+                }
+            }
+
+            @Override public void onLoaderReset(Loader<Cursor> loader) {
+            }
+        };
+
+        getLoaderManager().initLoader(1, null, callback);
     }
 
     private Callback<?> mResponseCallback = new Callback<ResponseList<?>>() {
@@ -104,7 +131,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
                     mTrailerAdapter.notifyDataSetChanged();
                 }
             }
-
         }
 
         @Override
@@ -129,14 +155,47 @@ import retrofit2.converter.gson.GsonConverterFactory;
             }
         }
         return retList;
+    }
 
+    @Override public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if(isFavorite) {
+            setMenuItemIcon(menu.findItem(R.id.action_star), R.drawable.ic_star_black_24dp);
+        } else {
+            setMenuItemIcon(menu.findItem(R.id.action_star), R.drawable.ic_star_border_black_24dp);
+        }
+        return true;
     }
 
     @Override public boolean onOptionsItemSelected(MenuItem item) {
-        if(item.getItemId() == android.R.id.home) {
-            onBackPressed();
+        switch(item.getItemId()) {
+            case android.R.id.home:
+                onBackPressed();
+                return true;
+            case R.id.action_star:
+                if(isFavorite) {
+                    getBaseContext().getContentResolver().delete(MovieProvider.Movies.withId(mMovie.getId()), null, null);
+                } else {
+                    ContentValues cv = new ContentValues();
+                    cv.put(MovieColumns.id, mMovie.getId());
+                    cv.put(MovieColumns.title, mMovie.getTitle());
+                    getBaseContext().getContentResolver().insert(MovieProvider.Movies.CONTENT_URI, cv);
+                }
+                isFavorite = !isFavorite;
+                invalidateOptionsMenu();
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
         }
-        return super.onOptionsItemSelected(item);
+    }
+
+    private void setMenuItemIcon(MenuItem item, int iconId) {
+        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+            item.setIcon(getDrawable(iconId));
+        } else {
+            //noinspection deprecation
+            item.setIcon(getResources().getDrawable(iconId));
+        }
     }
 
     class TrailerAdapter extends RecyclerView.Adapter<TrailerAdapter.ViewHolder> {

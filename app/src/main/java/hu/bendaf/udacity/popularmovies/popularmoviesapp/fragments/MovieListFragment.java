@@ -110,9 +110,9 @@ public class MovieListFragment extends Fragment {
                 openDetails.putExtra(MovieDetailsAct.EXTRA_MOVIE, movies.get(holder.getLayoutPosition()));
                 if(holder.ivPic.getDrawable() != null) {
                     Bitmap bitmap = ((BitmapDrawable) holder.ivPic.getDrawable()).getBitmap();
-                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                    byte[] b = baos.toByteArray();
+                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                    byte[] b = byteArrayOutputStream.toByteArray();
                     openDetails.putExtra(MovieDetailsAct.EXTRA_PICTURE, b);
                 }
                 ActivityOptionsCompat options = ActivityOptionsCompat.

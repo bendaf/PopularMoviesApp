@@ -4,6 +4,7 @@
     tools:context="hu.bendaf.udacity.popularmovies.popularmoviesapp.activities.MainAct">
     <item
         android:id="@+id/action_star"
+        android:icon="@drawable/ic_star_border_black_24dp"
         android:orderInCategory="100"
         android:title="@string/action_settings"
         app:showAsAction="always" />
