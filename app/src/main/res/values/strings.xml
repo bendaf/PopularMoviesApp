@@ -6,4 +6,7 @@
     <string name="title_tab_popular">Most popular</string>
     <string name="title_tab_top_rated">Highest rated</string>
     <string name="movie_picture_desc">Movie picture</string>
+    <string name="story">Story</string>
+    <string name="trailers">Trailers</string>
+    <string name="reviews">Reviews</string>
 </resources>

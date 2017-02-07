@@ -22,14 +22,16 @@ import java.util.List;
 
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.R;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.activities.MovieDetailsAct;
-import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.Movie;
-import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.MovieList;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.Movie;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.MoviesApi;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.ResponseList;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
+
+import static hu.bendaf.udacity.popularmovies.popularmoviesapp.utils.MoviesApi.MOVIES_BASE_URL;
 
 /**
  * Created by bendaf on 2017. 02. 03. PopularMoviesApp.
@@ -38,7 +40,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 public class MovieListFragment extends Fragment {
 
-    private static final String MOVIES_BASE_URL = "http://api.themoviedb.org/";
     private static final String ARG_MOVIE_TYPE = "movie_type";
     private static final String TAG = "MovieListFragment";
     private List<Movie> movies = new ArrayList<>();
@@ -69,24 +70,22 @@ public class MovieListFragment extends Fragment {
                 .addConverterFactory(GsonConverterFactory.create())
                 .build();
         MoviesApi service = retrofit.create(MoviesApi.class);
-        Call<MovieList> mlc = service.getMovies(getArguments().getString(ARG_MOVIE_TYPE), getString(R.string.THE_MOVIE_DB_API_TOKEN));
-        mlc.enqueue(new Callback<MovieList>() {
+        Call<ResponseList<Movie>> mlc = service.getMovies(getArguments().getString(ARG_MOVIE_TYPE), getString(R.string.THE_MOVIE_DB_API_TOKEN));
+        mlc.enqueue(new Callback<ResponseList<Movie>>() {
             @Override
-            public void onResponse(Call<MovieList> call, Response<MovieList> response) {
-
-                movies = response.body().getMovieList();
+            public void onResponse(Call<ResponseList<Movie>> call, Response<ResponseList<Movie>> response) {
+                movies = response.body().getResponses();
                 mAdapter.notifyDataSetChanged();
             }
 
             @Override
-            public void onFailure(Call<MovieList> call, Throwable t) {
-
+            public void onFailure(Call<ResponseList<Movie>> call, Throwable t) {
                 Log.d(TAG, "doInBackground: fail ");
                 t.printStackTrace();
             }
         });
 
-        RecyclerView moviesRecycler = (RecyclerView) rootView.findViewById(R.id.rl_movie_images);
+        RecyclerView moviesRecycler = (RecyclerView) rootView.findViewById(R.id.rv_movie_images);
         moviesRecycler.setHasFixedSize(true);
         mAdapter = new MoviesAdapter();
         moviesRecycler.setAdapter(mAdapter);
@@ -98,7 +97,7 @@ public class MovieListFragment extends Fragment {
 
         @Override
         public MoviesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-            View view = LayoutInflater.from(getContext()).inflate(R.layout.movies_recycler_item, parent, false);
+            View view = LayoutInflater.from(getContext()).inflate(R.layout.recycler_item_movies, parent, false);
             return new ViewHolder(view);
         }
 
@@ -106,22 +105,19 @@ public class MovieListFragment extends Fragment {
         public void onBindViewHolder(final MoviesAdapter.ViewHolder holder, int position) {
             Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w342" +
                     movies.get(position).getPosterPath()).into(holder.ivPic);
-            holder.ivPic.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    Intent openDetails = new Intent(getContext(), MovieDetailsAct.class);
-                    openDetails.putExtra(MovieDetailsAct.EXTRA_MOVIE, movies.get(holder.getLayoutPosition()));
-                    if(holder.ivPic.getDrawable() != null) {
-                        Bitmap bitmap = ((BitmapDrawable) holder.ivPic.getDrawable()).getBitmap();
-                        ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
-                        byte[] b = baos.toByteArray();
-                        openDetails.putExtra(MovieDetailsAct.EXTRA_PICTURE, b);
-                    }
-                    ActivityOptionsCompat options = ActivityOptionsCompat.
-                            makeSceneTransitionAnimation(getActivity(), holder.ivPic, "picture");
-                    startActivity(openDetails, options.toBundle());
+            holder.ivPic.setOnClickListener(view -> {
+                Intent openDetails = new Intent(getContext(), MovieDetailsAct.class);
+                openDetails.putExtra(MovieDetailsAct.EXTRA_MOVIE, movies.get(holder.getLayoutPosition()));
+                if(holder.ivPic.getDrawable() != null) {
+                    Bitmap bitmap = ((BitmapDrawable) holder.ivPic.getDrawable()).getBitmap();
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, baos);
+                    byte[] b = baos.toByteArray();
+                    openDetails.putExtra(MovieDetailsAct.EXTRA_PICTURE, b);
                 }
+                ActivityOptionsCompat options = ActivityOptionsCompat.
+                        makeSceneTransitionAnimation(getActivity(), holder.ivPic, "picture");
+                startActivity(openDetails, options.toBundle());
             });
         }
 

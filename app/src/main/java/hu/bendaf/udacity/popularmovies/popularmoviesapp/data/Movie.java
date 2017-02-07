@@ -1,15 +1,18 @@
-package hu.bendaf.udacity.popularmovies.popularmoviesapp.utils;
+package hu.bendaf.udacity.popularmovies.popularmoviesapp.data;
 
 import android.os.Parcel;
 import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by bendaf on 2017. 02. 03. PopularMoviesApp.
- * This class is for storing movie datas.
+ * This class is for storing movie data.
  */
-public class Movie implements Parcelable {
+public class Movie implements Parcelable{
     @SerializedName("poster_path")
     private String posterPath;
     @SerializedName("original_title")
@@ -20,6 +23,10 @@ public class Movie implements Parcelable {
     private String overview;
     @SerializedName("release_date")
     private String releaseDate;
+    @SerializedName("id")
+    private Integer id;
+    private List<Trailer> trailers;
+    private List<Review> reviews;
 
     public Movie() {
     }
@@ -44,12 +51,45 @@ public class Movie implements Parcelable {
         return releaseDate;
     }
 
-    private Movie(Parcel in) {
+    public Integer getId() {
+        return id;
+    }
+
+    public List<Trailer> getTrailers() {
+        return trailers;
+    }
+
+    public List<Review> getReviews() {
+        return reviews;
+    }
+
+    public void setTrailers(List<Trailer> trailers) {
+        this.trailers = trailers;
+    }
+
+    public void setReviews(List<Review> reviews) {
+        this.reviews = reviews;
+    }
+
+    Movie(Parcel in) {
         posterPath = in.readString();
         title = in.readString();
         voteAverage = in.readString();
         overview = in.readString();
         releaseDate = in.readString();
+        id = in.readByte() == 0x00 ? null : in.readInt();
+        if (in.readByte() == 0x01) {
+            trailers = new ArrayList<>();
+            in.readList(trailers, Trailer.class.getClassLoader());
+        } else {
+            trailers = null;
+        }
+        if (in.readByte() == 0x01) {
+            reviews = new ArrayList<>();
+            in.readList(reviews, Review.class.getClassLoader());
+        } else {
+            reviews = null;
+        }
     }
 
     @Override
@@ -64,6 +104,24 @@ public class Movie implements Parcelable {
         dest.writeString(voteAverage);
         dest.writeString(overview);
         dest.writeString(releaseDate);
+        if (id == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeInt(id);
+        }
+        if (trailers == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(trailers);
+        }
+        if (reviews == null) {
+            dest.writeByte((byte) (0x00));
+        } else {
+            dest.writeByte((byte) (0x01));
+            dest.writeList(reviews);
+        }
     }
 
     @SuppressWarnings("unused")
