@@ -9,9 +9,10 @@ import static net.simonvt.schematic.annotation.DataType.Type.TEXT;
 
 /**
  * Created by bendaf on 2017. 02. 07. PopularMoviesApp.
+ * Contract for the movies database.
  */
 
-public interface MovieColumns {
+public interface MovieContract {
     @DataType(INTEGER) @PrimaryKey String id = "id";
     @DataType(TEXT) @NotNull String title = "title";
     @DataType(TEXT) String posterPath = "posterPath";

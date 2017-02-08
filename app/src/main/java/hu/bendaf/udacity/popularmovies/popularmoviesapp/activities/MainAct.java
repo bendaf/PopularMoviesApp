@@ -16,6 +16,7 @@ public class MainAct extends AppCompatActivity {
     private static final String TAG = "MainAct";
     private static final String PATH_POPULAR = "popular";
     private static final String PATH_TOP_RATED = "top_rated";
+    public static final String PATH_FAVORITES = "favorites";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -46,14 +47,20 @@ public class MainAct extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-
-            return MovieListFragment.newInstance(position == 0 ? PATH_POPULAR : PATH_TOP_RATED);
+            switch(position) {
+                case 0:
+                    return MovieListFragment.newInstance(PATH_POPULAR);
+                case 1:
+                    return MovieListFragment.newInstance(PATH_TOP_RATED);
+                case 2:
+                default:
+                    return MovieListFragment.newInstance(PATH_FAVORITES);
+            }
         }
 
         @Override
         public int getCount() {
-            // Show 3 total pages.
-            return 2;
+            return 3;
         }
 
         @Override
@@ -63,6 +70,8 @@ public class MainAct extends AppCompatActivity {
                     return getString(R.string.title_tab_popular).toUpperCase();
                 case 1:
                     return getString(R.string.title_tab_top_rated).toUpperCase();
+                case 2:
+                    return getString(R.string.title_tab_favorites).toUpperCase();
             }
             return null;
         }

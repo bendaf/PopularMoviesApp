@@ -23,7 +23,13 @@ public class Movie implements Parcelable {
     private List<Trailer> trailers;
     private List<Review> reviews;
 
-    public Movie() {
+    public Movie(int id, String title, String posterPath, String overview, String releaseDate, String voteAverage) {
+        this.id = id;
+        this.title = title;
+        this.posterPath = posterPath;
+        this.overview = overview;
+        this.releaseDate = releaseDate;
+        this.voteAverage = voteAverage;
     }
 
     public String getPosterPath() {
@@ -66,7 +72,7 @@ public class Movie implements Parcelable {
         this.reviews = reviews;
     }
 
-    Movie(Parcel in) {
+    @SuppressWarnings("WeakerAccess") Movie(Parcel in) {
         posterPath = in.readString();
         title = in.readString();
         voteAverage = in.readString();

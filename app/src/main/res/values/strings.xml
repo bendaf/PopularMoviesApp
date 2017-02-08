@@ -9,4 +9,5 @@
     <string name="story">Story</string>
     <string name="trailers">Trailers</string>
     <string name="reviews">Reviews</string>
+    <string name="title_tab_favorites">Favourites</string>
 </resources>

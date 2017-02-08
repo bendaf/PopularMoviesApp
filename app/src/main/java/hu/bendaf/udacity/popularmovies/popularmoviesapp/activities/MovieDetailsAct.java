@@ -32,7 +32,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.R;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.Movie;
-import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.MovieColumns;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.MovieContract;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.MovieProvider;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.Review;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.Trailer;
@@ -177,8 +177,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
                     getBaseContext().getContentResolver().delete(MovieProvider.Movies.withId(mMovie.getId()), null, null);
                 } else {
                     ContentValues cv = new ContentValues();
-                    cv.put(MovieColumns.id, mMovie.getId());
-                    cv.put(MovieColumns.title, mMovie.getTitle());
+                    cv.put(MovieContract.id, mMovie.getId());
+                    cv.put(MovieContract.title, mMovie.getTitle());
+                    cv.put(MovieContract.posterPath, mMovie.getPosterPath());
+                    cv.put(MovieContract.overview, mMovie.getOverview());
+                    cv.put(MovieContract.releaseDate, mMovie.getReleaseDate());
+                    cv.put(MovieContract.voteAverage, mMovie.getVoteAverage());
                     getBaseContext().getContentResolver().insert(MovieProvider.Movies.CONTENT_URI, cv);
                 }
                 isFavorite = !isFavorite;
