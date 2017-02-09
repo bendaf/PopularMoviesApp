@@ -142,11 +142,6 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
     private List<Trailer> filterYoutubeVideos(List<Trailer> videoList) {
         if(videoList == null) return null;
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-            videoList.removeIf(r -> !(r.getSite().toLowerCase().equals("youtube")
-                    && r.getType().toLowerCase().equals("trailer")));
-            return videoList;
-        }
         List<Trailer> retList = new ArrayList<>();
         //noinspection Convert2streamapi
         for(Trailer t : videoList) {
@@ -211,9 +206,12 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
         @Override public void onBindViewHolder(final ViewHolder holder, int position) {
             holder.mIbPlay.setImageResource(R.drawable.ic_play_circle);
-            holder.mIbPlay.setOnClickListener(view ->
+            holder.mIbPlay.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View view) {
                     startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse("http://www.youtube.com/watch?v=" +
-                            mMovie.getTrailers().get(holder.getLayoutPosition()).getKey()))));
+                            mMovie.getTrailers().get(holder.getLayoutPosition()).getKey())));
+                }
+            });
         }
 
         @Override public int getItemCount() {
@@ -237,11 +235,15 @@ import retrofit2.converter.gson.GsonConverterFactory;
             return new ViewHolder(v);
         }
 
-        @Override public void onBindViewHolder(ReviewAdapter.ViewHolder holder, int position) {
+        @Override public void onBindViewHolder(final ReviewAdapter.ViewHolder holder, int position) {
             holder.mTvAuthor.setText(mMovie.getReviews().get(position).getAuthor());
             holder.mTvText.setText(mMovie.getReviews().get(position).getContent());
-            holder.mCardView.setOnClickListener(view -> startActivity(new Intent(Intent.ACTION_VIEW,
-                    Uri.parse(mMovie.getReviews().get(holder.getLayoutPosition()).getUrl()))));
+            holder.mCardView.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View view) {
+                    startActivity(new Intent(Intent.ACTION_VIEW,
+                            Uri.parse(mMovie.getReviews().get(holder.getLayoutPosition()).getUrl())));
+                }
+            });
         }
 
         @Override public int getItemCount() {

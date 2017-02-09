@@ -142,19 +142,21 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         public void onBindViewHolder(final MoviesAdapter.ViewHolder holder, int position) {
             Picasso.with(getContext()).load("http://image.tmdb.org/t/p/w342" +
                     mMovies.get(position).getPosterPath()).into(holder.ivPic);
-            holder.ivPic.setOnClickListener(view -> {
-                Intent openDetails = new Intent(getContext(), MovieDetailsAct.class);
-                openDetails.putExtra(MovieDetailsAct.EXTRA_MOVIE, mMovies.get(holder.getLayoutPosition()));
-                if(holder.ivPic.getDrawable() != null) {
-                    Bitmap bitmap = ((BitmapDrawable) holder.ivPic.getDrawable()).getBitmap();
-                    ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
-                    byte[] b = byteArrayOutputStream.toByteArray();
-                    openDetails.putExtra(MovieDetailsAct.EXTRA_PICTURE, b);
+            holder.ivPic.setOnClickListener(new View.OnClickListener() {
+                @Override public void onClick(View view) {
+                    Intent openDetails = new Intent(getContext(), MovieDetailsAct.class);
+                    openDetails.putExtra(MovieDetailsAct.EXTRA_MOVIE, mMovies.get(holder.getLayoutPosition()));
+                    if(holder.ivPic.getDrawable() != null) {
+                        Bitmap bitmap = ((BitmapDrawable) holder.ivPic.getDrawable()).getBitmap();
+                        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
+                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, byteArrayOutputStream);
+                        byte[] b = byteArrayOutputStream.toByteArray();
+                        openDetails.putExtra(MovieDetailsAct.EXTRA_PICTURE, b);
+                    }
+                    ActivityOptionsCompat options = ActivityOptionsCompat.
+                            makeSceneTransitionAnimation(getActivity(), holder.ivPic, "picture");
+                    startActivity(openDetails, options.toBundle());
                 }
-                ActivityOptionsCompat options = ActivityOptionsCompat.
-                        makeSceneTransitionAnimation(getActivity(), holder.ivPic, "picture");
-                startActivity(openDetails, options.toBundle());
             });
         }
 
