@@ -6,4 +6,13 @@
     <dimen name="text_medium">18sp</dimen>
     <dimen name="activity_horizontal_margin_header">24dp</dimen>
     <dimen name="activity_vertical_margin_small">8dp</dimen>
+    <dimen name="activity_appbar_elevation">6dp</dimen>
+    <dimen name="poster_height">300dp</dimen>
+    <dimen name="header_height">56dp</dimen>
+    <dimen name="activity_horizontal_margin_medium">24dp</dimen>
+    <dimen name="recycler_item_height">250dp</dimen>
+    <dimen name="recycler_item_elevation">2dp</dimen>
+    <dimen name="trailer_item_padding">4dp</dimen>
+    <dimen name="trailer_item_size">72dp</dimen>
+    <dimen name="trailer_item_margin">8dp</dimen>
 </resources>
