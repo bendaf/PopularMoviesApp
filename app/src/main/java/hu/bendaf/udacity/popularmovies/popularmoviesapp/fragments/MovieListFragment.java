@@ -5,6 +5,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.LoaderManager;
@@ -25,7 +26,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.R;
-import hu.bendaf.udacity.popularmovies.popularmoviesapp.activities.MainAct;
+import hu.bendaf.udacity.popularmovies.popularmoviesapp.activities.MainActivity;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.activities.MovieDetailsAct;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.Movie;
 import hu.bendaf.udacity.popularmovies.popularmoviesapp.data.MovieContract;
@@ -49,6 +50,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
 
     private static final String ARG_MOVIE_TYPE = "movie_type";
     private static final String TAG = MovieListFragment.class.getSimpleName();
+    private static final String KEY_LIST_STATE = "key list state";
     private static final int LOADER_MOVIE = 13;
     private static final String[] MOVIE_PROJECTION = new String[]{
             MovieContract.id, MovieContract.title, MovieContract.posterPath,
@@ -59,11 +61,13 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     public static final int INDEX_POSTER_PATH = 2;
     public static final int INDEX_OVERVIEW = 3;
     public static final int INDEX_RELEASE_DATE = 4;
-    public static final int INDEX_VOTE_EVERAGE = 5;
+    public static final int INDEX_VOTE_AVERAGE = 5;
 
     private List<Movie> mMovies = new ArrayList<>();
     private MoviesAdapter mAdapter;
     private String mType;
+    private GridLayoutManager mLayoutManager;
+    private Parcelable mLayoutManagerState;
 
     public static MovieListFragment newInstance(String movieType) {
         MovieListFragment fragment = new MovieListFragment();
@@ -78,7 +82,7 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         View rootView = inflater.inflate(R.layout.fragment_main, container, false);
         mType = getArguments().getString(ARG_MOVIE_TYPE);
         if(mType == null) return rootView;
-        if(mType.equals(MainAct.PATH_FAVORITES)) {
+        if(mType.equals(MainActivity.PATH_FAVORITES)) {
             getLoaderManager().initLoader(LOADER_MOVIE, null, MovieListFragment.this);
         } else {
             Retrofit retrofit = new Retrofit.Builder()
@@ -92,6 +96,8 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
                 public void onResponse(Call<ResponseList<Movie>> call, Response<ResponseList<Movie>> response) {
                     mMovies = response.body().getResponses();
                     mAdapter.notifyDataSetChanged();
+
+                    if(mLayoutManagerState != null) mLayoutManager.onRestoreInstanceState(mLayoutManagerState);
                 }
 
                 @Override
@@ -105,8 +111,17 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
         moviesRecycler.setHasFixedSize(true);
         mAdapter = new MoviesAdapter();
         moviesRecycler.setAdapter(mAdapter);
-        moviesRecycler.setLayoutManager(new GridLayoutManager(getContext(), 2));
+        mLayoutManager = new GridLayoutManager(getContext(), 2);
+        moviesRecycler.setLayoutManager(mLayoutManager);
+        if(savedInstanceState != null && savedInstanceState.containsKey(KEY_LIST_STATE)) {
+            mLayoutManagerState = savedInstanceState.getParcelable(KEY_LIST_STATE);
+        }
         return rootView;
+    }
+
+    @Override public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelable(KEY_LIST_STATE, mLayoutManager.onSaveInstanceState());
+        super.onSaveInstanceState(outState);
     }
 
     @Override public Loader<Cursor> onCreateLoader(int id, Bundle args) {
@@ -114,15 +129,16 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     @Override public void onLoadFinished(Loader<Cursor> loader, Cursor cursor) {
-        Log.d(TAG, "onLoadFinished: " + cursor);
         if(mAdapter == null || cursor == null) return;
         mMovies = new ArrayList<>(cursor.getCount());
         while(cursor.moveToNext()) {
             mMovies.add(new Movie(cursor.getInt(INDEX_ID), cursor.getString(INDEX_TITLE),
                     cursor.getString(INDEX_POSTER_PATH), cursor.getString(INDEX_OVERVIEW),
-                    cursor.getString(INDEX_RELEASE_DATE), cursor.getString(INDEX_VOTE_EVERAGE)));
+                    cursor.getString(INDEX_RELEASE_DATE), cursor.getString(INDEX_VOTE_AVERAGE)));
         }
         mAdapter.notifyDataSetChanged();
+        cursor.moveToFirst();
+        if(mLayoutManagerState != null) mLayoutManager.onRestoreInstanceState(mLayoutManagerState);
     }
 
     @Override public void onLoaderReset(Loader<Cursor> loader) {
@@ -130,7 +146,6 @@ public class MovieListFragment extends Fragment implements LoaderManager.LoaderC
     }
 
     class MoviesAdapter extends RecyclerView.Adapter<MoviesAdapter.ViewHolder> {
-
 
         @Override
         public MoviesAdapter.ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
